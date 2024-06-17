@@ -44,7 +44,7 @@ module.exports = {
           name: "`/reset-nickname`",
           value:
             "Resets the nicknames of users in the voice channel to their original names.\n\nUsage: `/reset-nickname [exclude: @user1@user2]`\n\nExamples:\n- `/reset-nickname`\n- `/reset-nickname exclude: @user1@user2`\n\nNote: The attributes are optional.",
-        },
+        } /*,
         {
           name: "\u200B",
           value: "\n",
@@ -53,7 +53,7 @@ module.exports = {
           name: "`/update-cache`",
           value:
             "Updates the cache of members in the voice channel to ensure the latest data is used.\n\nUsage: `/update-cache`\n\nExample: `/update-cache`",
-        }
+        }*/
       )
       .setFooter({
         text: "Note: When renaming, the bot retains the content within any type of brackets in the nickname.",
