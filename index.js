@@ -3,6 +3,7 @@ const { Client, GatewayIntentBits, Collection } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
 const keepAlive = require("./keep_alive");
+const { rateLimit, executeSingleCommand } = require("./utils/rate-limiting");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
@@ -33,11 +34,28 @@ client.on("interactionCreate", async (interaction) => {
   if (!command) return;
 
   try {
-    await command.execute(interaction);
+    await executeSingleCommand(interaction, async () => {
+      await rateLimit(interaction, async () => {
+        await command.execute(interaction);
+      });
+    });
   } catch (error) {
     console.error(error);
+
+    let errorMessage = "There was an error while executing this command!";
+
+    if (error instanceof SyntaxError) {
+      errorMessage = `Syntax error in the command: ${error.message}`;
+    } else if (error.message.includes("INVALID_MENTION")) {
+      errorMessage = `Invalid mention format. Please use the correct mention format.`;
+    } else if (error.message.includes("INVALID_EXCLUDE")) {
+      errorMessage = `Invalid exclude format. Please use the correct format for excluding users.`;
+    } else {
+      errorMessage = `An unexpected error occurred: incorrectly written attributes`;
+    }
+
     await interaction.reply({
-      content: "There was an error while executing this command!",
+      content: errorMessage,
       ephemeral: true,
     });
   }
